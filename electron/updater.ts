@@ -33,12 +33,14 @@ const getRemoteVersion = async (launcherPaths: LauncherPaths) => {
       return main.config.customDesktopVersion
     } else {
       // Rollout
-      const response = await axios.get('https://play.decentraland.org', {
+      //const response = await axios.get('https://play.decentraland.org', {
+      const response = await axios.get('https://cdn.devnet.andverse.org/version.json', {
         headers: {
           'x-debug-rollouts': true
         }
       })
-      return response.data.map['@dcl/explorer-desktop'].version
+      //return response.data.map['@dcl/explorer-desktop'].version
+      return response.data.map['explorer-desktop'].version
     }
   } else {
     // Dev
@@ -90,7 +92,8 @@ const registerVersionEvent = (launcherPaths: LauncherPaths) => {
 
       await event.sender.executeJavaScript(`globalThis.ROLLOUTS['@dcl/unity-renderer']['version'] = ${desktopVersion};`)
       await event.sender.executeJavaScript(
-        `globalThis.ROLLOUTS['@dcl/explorer-desktop'] = { 'version': ${desktopVersion} };`
+        //`globalThis.ROLLOUTS['@dcl/explorer-desktop'] = { 'version': ${desktopVersion} };`
+        `globalThis.ROLLOUTS['explorer-desktop'] = { 'version': ${desktopVersion} };`
       )
     }
   })
@@ -178,9 +181,9 @@ const registerExecuteProcessEvent = (rendererPath: string, executablePath: strin
       // We didn't find a way to get this windows store app package path dynamically
       if (process.windowsStore) {
         rendererPath = process.env.LOCALAPPDATA +
-            `\\Packages\\DecentralandFoundation.Decentraland_4zmdhd0rz3xz8\\LocalCache\\Roaming\\explorer-desktop-launcher\\renderer\\`
+          `\\Packages\\DecentralandFoundation.Decentraland_4zmdhd0rz3xz8\\LocalCache\\Roaming\\explorer-desktop-launcher\\renderer\\`
       }
-      
+
       let path = rendererPath + getBranchName() + executablePath
 
       let params = [`--browser`, `false`, `--port`, `${main.config.port}`]
@@ -210,7 +213,8 @@ const registerExecuteProcessEvent = (rendererPath: string, executablePath: strin
 const getArtifactUrl = (launcherPaths: LauncherPaths) => {
   if (isUsingRollout()) {
     // Rollout
-    const baseUrl = 'https://cdn.decentraland.org/@dcl/explorer-desktop/'
+    //const baseUrl = 'https://cdn.decentraland.org/@dcl/explorer-desktop/'
+    const baseUrl = 'https://cdn.devnet.andverse.org/explorer-desktop/'
     return `${baseUrl}${encodeURIComponent(remoteVersion)}/${encodeURIComponent(launcherPaths.artifactUrl)}`
   } else {
     // Dev
